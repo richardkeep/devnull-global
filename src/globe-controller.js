@@ -1,41 +1,4 @@
-    // Keep controls collapsed by default on mobile; remember preference on this device.
-    const panel = document.querySelector('.panel');
-    const collapseToggle = document.getElementById('collapse-toggle');
-    const panelPreferenceKey = 'dev-null-globe-panel-collapsed';
-    const savedPanelPreference = localStorage.getItem(panelPreferenceKey);
-    let panelCollapsed = savedPanelPreference === null
-      ? window.matchMedia('(max-width: 650px)').matches
-      : savedPanelPreference === 'true';
-    function renderPanel() {
-      panel.classList.toggle('collapsed', panelCollapsed);
-      collapseToggle.textContent = panelCollapsed ? 'Show ▼' : 'Hide ▲';
-      collapseToggle.setAttribute('aria-expanded', String(!panelCollapsed));
-      document.getElementById('panel-content').inert = panelCollapsed;
-    }
-    collapseToggle.addEventListener('click', () => {
-      panelCollapsed = !panelCollapsed;
-      try { localStorage.setItem(panelPreferenceKey, String(panelCollapsed)); } catch {}
-      renderPanel();
-    });
-    renderPanel();
-
-    // Decorative pastries are independent of the globe and API requests.
-    const sprinkleLayer = document.getElementById('pastry-sprinkles');
-    const sprinklePositions = [[7,74,33],[16,88,42],[35,93,30],[60,84,38],[83,89,33],[93,67,44],[87,22,31],[65,7,30],[38,9,35],[8,43,32]];
-    sprinklePositions.forEach(([x, y, size], i) => {
-      const pastry = document.createElement('img');
-      pastry.className = 'pastry';
-      pastry.src = 'https://dev-null.sh/pastel-de-nata.svg';
-      pastry.alt = '';
-      pastry.loading = 'lazy';
-      pastry.style.left = `${x}%`;
-      pastry.style.top = `${y}%`;
-      pastry.style.setProperty('--size', `${size}px`);
-      pastry.style.setProperty('--duration', `${5 + i % 4}s`);
-      pastry.style.setProperty('--delay', `${-i * 0.7}s`);
-      sprinkleLayer.appendChild(pastry);
-    });
-
+export function initializeGlobe() {
     const API_BASE = `${location.origin}/api/v1/users/`;
     const storageKey = (handle, mode) => `dev-null-${mode}-globe-v2:${handle.toLowerCase()}`;
     let currentHandle = 'tom';
@@ -410,3 +373,5 @@
     const params = new URLSearchParams(location.search);
     const initial = params.get('user') || 'tom';
     switchUser(initial, params.get('mode') === 'followers' ? 'followers' : 'following');
+
+}
