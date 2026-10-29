@@ -475,6 +475,12 @@
           const user = normalizeUser(item);
           if (!user.handle || seenHandles.has(user.handle)) continue;
           seenHandles.add(user.handle);
+          // Only plot developers who have provided a non-empty location.
+          // Coordinates alone do not override a missing profile location.
+          if (!user.location || !String(user.location).trim()) {
+            skipped++;
+            continue;
+          }
           if (user.lat == null || user.lng == null) {
             if (!user.location) { skipped++; continue; }
             try {
