@@ -26,7 +26,7 @@ export default {
     const task = (async () => {
       const response = await fetch(upstream, {
         headers: { Accept: 'application/json' },
-        redirect: 'error'
+        redirect: 'follow'
       });
       if (!response.ok || !(response.headers.get('content-type') || '').includes('json')) {
         return new Response(response.body, {
@@ -63,7 +63,8 @@ export default {
     try { return (await task).clone(); }
     catch (error) {
       console.error('Globe proxy error:', error);
-      return Response.json({ error: 'Cloudflare proxy could not reach the API' }, {
+      const reason = error instanceof Error ? `${error.name}: ${error.message}` : String(error);
+      return Response.json({ error: 'Cloudflare proxy request failed', detail: reason }, {
         status: 502,
         headers: { 'Cache-Control': 'no-store', 'X-Globe-Error-Source': 'worker' }
       });
