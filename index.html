@@ -390,7 +390,10 @@
 
       let succeeded = false;
       try {
-        // Normalize upstream pagination links through our same-origin shared cache.\n        const pageUrl = new URL(url, location.origin);\n        if (pageUrl.origin !== location.origin && pageUrl.origin !== 'https://dev-null.sh') throw new Error('Unexpected pagination URL');\n        const response = await fetch(`${location.origin}${pageUrl.pathname}${pageUrl.search}`, { headers: { Accept: 'application/json' } });
+        // Normalize upstream pagination links through our same-origin shared cache.
+        const pageUrl = new URL(url, location.origin);
+        if (pageUrl.origin !== location.origin && pageUrl.origin !== 'https://dev-null.sh') throw new Error('Unexpected pagination URL');
+        const response = await fetch(`${location.origin}${pageUrl.pathname}${pageUrl.search}`, { headers: { Accept: 'application/json' } });
         if (!response.ok) {
           if (response.status === 429) {
             const retryAfter = response.headers.get('Retry-After');
