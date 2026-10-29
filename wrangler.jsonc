@@ -1,7 +1,12 @@
 {
   "name": "dev-null-global",
   "compatibility_date": "2026-10-23",
+  "main": "src/worker.js",
   "assets": {
-    "directory": "./"
+    "directory": "./",
+    "binding": "ASSETS",
+    "run_worker_first": [
+      "/api/*"
+    ]
   }
 }
