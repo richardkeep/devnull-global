@@ -140,7 +140,7 @@
       sprinkleLayer.appendChild(pastry);
     });
 
-    const API_BASE = 'https://dev-null.sh/api/v1/users/';
+    const API_BASE = `${location.origin}/api/v1/users/`;
     const storageKey = (handle, mode) => `dev-null-${mode}-globe-v2:${handle.toLowerCase()}`;
     let currentHandle = 'tom';
     let currentMode = 'following';
@@ -390,7 +390,7 @@
 
       let succeeded = false;
       try {
-        const response = await fetch(url, { headers: { Accept: 'application/json' } });
+        // Normalize upstream pagination links through our same-origin shared cache.\n        const pageUrl = new URL(url, location.origin);\n        if (pageUrl.origin !== location.origin && pageUrl.origin !== 'https://dev-null.sh') throw new Error('Unexpected pagination URL');\n        const response = await fetch(`${location.origin}${pageUrl.pathname}${pageUrl.search}`, { headers: { Accept: 'application/json' } });
         if (!response.ok) {
           if (response.status === 429) {
             const retryAfter = response.headers.get('Retry-After');
