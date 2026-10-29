@@ -50,9 +50,13 @@ export default {
           'X-Globe-Cache': 'MISS'
         }
       });
-      const stored = new Response(result.body, result);
+      // Clone before caching: reusing result.body directly can lock its stream,
+      // causing the response returned to the browser to fail with HTTP 502.
+      const stored = result.clone();
       stored.headers.set('Cache-Control', `public, max-age=${ttl}`);
-      ctx.waitUntil(cache.put(key, stored));
+      ctx.waitUntil(cache.put(key, stored).catch(error => {
+        console.warn('Globe cache write failed:', error);
+      }));
       return result;
     })();
     pending.set(cacheKey, task);
