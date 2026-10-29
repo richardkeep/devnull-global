@@ -8,7 +8,7 @@
     * { box-sizing: border-box; }
     body { margin: 0; background: #050b16; color: #f4f7fb; font: 14px system-ui, sans-serif; overflow: hidden; }
     #globe { width: 100vw; height: 100vh; }
-    .panel { position: absolute; top: 20px; left: 20px; z-index: 10; padding: 16px 20px; background: #091321dd; border: 1px solid #31415b; border-radius: 14px; max-width: min(400px, calc(100vw - 40px)); }
+    .panel { position: fixed; top: 20px; left: 20px; z-index: 1000000; isolation: isolate; padding: 16px 20px; background: #091321dd; border: 1px solid #31415b; border-radius: 14px; max-width: min(400px, calc(100vw - 40px)); }
     h1 { font-size: 20px; margin: 0; }
     .panel-heading { display:flex; align-items:center; justify-content:space-between; gap:12px; }
     .collapse-toggle { margin:0; padding:7px 11px; flex-shrink:0; background:#15263d; font-size:13px; }
