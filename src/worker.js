@@ -35,7 +35,8 @@ export default {
             'Content-Type': response.headers.get('content-type') || 'text/plain',
             ...(response.headers.get('retry-after') ? { 'Retry-After': response.headers.get('retry-after') } : {}),
             'Cache-Control': 'no-store',
-            'X-Globe-Cache': 'BYPASS'
+            'X-Globe-Cache': 'BYPASS',
+            'X-Globe-Error-Source': 'origin'
           }
         });
       }
@@ -56,6 +57,13 @@ export default {
     })();
     pending.set(cacheKey, task);
     try { return (await task).clone(); }
+    catch (error) {
+      console.error('Globe proxy error:', error);
+      return Response.json({ error: 'Cloudflare proxy could not reach the API' }, {
+        status: 502,
+        headers: { 'Cache-Control': 'no-store', 'X-Globe-Error-Source': 'worker' }
+      });
+    }
     finally { pending.delete(cacheKey); }
   }
 };
