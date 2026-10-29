@@ -401,7 +401,11 @@
           }
           const source = response.headers.get('X-Globe-Error-Source');
           const reason = source === 'origin' ? 'dev-null.sh API' : source === 'worker' ? 'Cloudflare Worker' : 'API or proxy';
-          throw new Error(`${reason} returned HTTP ${response.status}. Please retry later.`);
+          let detail = '';
+          if (source === 'worker') {
+            try { detail = (await response.json()).detail || ''; } catch (_) {}
+          }
+          throw new Error(`${reason} returned HTTP ${response.status}${detail ? ': ' + detail : ''}`);
         }
         const json = await response.json();
         if (session !== sessionId) return;
