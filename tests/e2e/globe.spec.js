@@ -21,6 +21,7 @@ test.beforeEach(async ({ page }) => {
 
 test('loads users, skips missing locations and paginates on demand', async ({ page }) => {
   await page.goto('/');
+  if (await page.locator('.panel').evaluate(el => el.classList.contains('collapsed'))) await page.locator('#collapse-toggle').click();
   await expect(page.locator('#status')).toContainText('1 on globe');
   await expect(page.locator('#status')).toContainText('2 fetched');
   await expect(page.locator('.person')).toHaveCount(1);
@@ -31,6 +32,7 @@ test('loads users, skips missing locations and paginates on demand', async ({ pa
 
 test('switches between following and followers', async ({ page }) => {
   await page.goto('/');
+  if (await page.locator('.panel').evaluate(el => el.classList.contains('collapsed'))) await page.locator('#collapse-toggle').click();
   await expect(page.locator('.person')).toHaveCount(1);
   await page.getByRole('button', { name: 'Followers', exact: true }).click();
   await expect(page.locator('#heading')).toContainText('Followers');
