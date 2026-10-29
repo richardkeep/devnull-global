@@ -399,7 +399,9 @@
             const retryAfter = response.headers.get('Retry-After');
             throw new Error(`Rate limited (429). Wait ${retryAfter ? retryAfter + ' seconds' : 'a while'} before clicking again.`);
           }
-          throw new Error(`API request failed (${response.status})`);
+          const source = response.headers.get('X-Globe-Error-Source');
+          const reason = source === 'origin' ? 'dev-null.sh API' : source === 'worker' ? 'Cloudflare Worker' : 'API or proxy';
+          throw new Error(`${reason} returned HTTP ${response.status}. Please retry later.`);
         }
         const json = await response.json();
         if (session !== sessionId) return;
