@@ -263,7 +263,6 @@
     const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 
     const geoCache = new Map();
-    const pagePrefetch = new Map();
     const locationPending = new Map();
     let lastGeocodeAt = 0;
     let lastRenderAt = 0;
@@ -278,14 +277,6 @@
       }
       lastRenderAt = Date.now();
       globe.htmlElementsData([...plotted]);
-    }
-    function prefetchPage(url, session) {
-      if (!url || autoPaused || pagePrefetch.has(url)) return;
-      const task = fetch(url, { headers: { Accept: 'application/json' } })
-        .then(response => { if (!response.ok) throw new Error('Prefetch unavailable'); return response.json(); })
-        .catch(() => null);
-      pagePrefetch.set(url, task);
-      if (pagePrefetch.size > 2) pagePrefetch.delete(pagePrefetch.keys().next().value);
     }
     function saveState() {
       try {
@@ -440,18 +431,15 @@
         const pageUrl = new URL(url, location.origin);
         if (pageUrl.origin !== location.origin && pageUrl.origin !== 'https://dev-null.sh') throw new Error('Unexpected pagination URL');
         const proxyUrl = `${location.origin}${pageUrl.pathname}${pageUrl.search}`;
-        const prefetched = pagePrefetch.get(proxyUrl);
-        if (prefetched) pagePrefetch.delete(proxyUrl);
-        const response = prefetched ? null : await fetch(proxyUrl, { headers: { Accept: 'application/json' } });
-        if (response && !response.ok) {
+        const response = await fetch(proxyUrl, { headers: { Accept: 'application/json' } });
+        if (!response.ok) {
           if (response.status === 429) {
             const retryAfter = response.headers.get('Retry-After');
             throw new Error(`Rate limited (429). Wait ${retryAfter ? retryAfter + ' seconds' : 'a while'} before clicking again.`);
           }
           throw new Error(`API request failed (${response.status})`);
         }
-        const json = prefetched ? await prefetched : await response.json();
-        if (!json) throw new Error('Prefetched page unavailable; please retry.');
+        const json = await response.json();
         if (session !== sessionId) return;
         const items = Array.isArray(json) ? json :
           (Array.isArray(json.data) ? json.data :
@@ -462,12 +450,6 @@
         const next = json.links?.next || json.next_page_url || json.meta?.next_page_url;
         const candidate = next ? new URL(next, url).href : null;
         nextUrl = candidate && !visitedPages.has(candidate) ? candidate : null;
-        if (nextUrl) {
-          const nextPage = new URL(nextUrl, location.origin);
-          if (nextPage.origin === location.origin || nextPage.origin === 'https://dev-null.sh') {
-            prefetchPage(`${location.origin}${nextPage.pathname}${nextPage.search}`, session);
-          }
-        }
         loaded += items.length;
 
         for (const item of items) {
@@ -545,7 +527,6 @@
       seenHandles.clear();
       visitedPages.clear();
       geoCache.clear();
-      pagePrefetch.clear();
       locationPending.clear();
       nextUrl = API_URL;
       skipped = 0;
