@@ -1,5 +1,7 @@
 # dev/null Community Globe
 
+[View the live site](https://dev-null-global.r-kipsang.workers.dev/?user=tom&mode=following)
+
 Install dependencies with `yarn install`.
 
 - `yarn dev`: start the development server at http://localhost:5173.
