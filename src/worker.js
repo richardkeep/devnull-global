@@ -1,7 +1,7 @@
-// Shared, best-effort edge cache for public dev/null relationship pages.
+// Shared, best-effort edge cache for public dev/null profiles and relationship pages.
 // No KV/D1 or paid Cloudflare services required.
 const ORIGIN = 'https://dev-null.sh';
-const PATH = /^\/api\/v1\/users\/([a-zA-Z0-9_-]{1,64})\/(following|followers)\/?$/;
+const PATH = /^\/api\/v1\/users\/([a-zA-Z0-9_-]{1,64})(?:\/(following|followers))?\/?$/;
 const pending = new Map();
 
 export default {

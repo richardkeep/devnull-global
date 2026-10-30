@@ -11,6 +11,14 @@ function ProfileLink({label, url}) {
   return h('a', {href, target: '_blank', rel: 'noopener noreferrer'}, label);
 }
 
+function ProfileStats({user}) {
+  return h('dl', {className: 'profile-stats'},
+    ...[['commits_count', 'Commits'], ['followers_count', 'Followers'], ['following_count', 'Following']].map(([key, label]) =>
+      h('div', {key},
+        h('dt', null, label),
+        h('dd', null, user[key] == null ? '—' : user[key].toLocaleString('en-US')))));
+}
+
 export function ProfileCard({profile, keepProfile, hideProfileSoon}) {
   const cardRef = useRef(null);
   const [position, setPosition] = useState({left: 12, top: 12});
@@ -25,7 +33,7 @@ export function ProfileCard({profile, keepProfile, hideProfileSoon}) {
   const user = profile?.user;
   return h('div', {
     id: 'profile-card', ref: cardRef, className: 'profile-card' + (user ? ' visible' : ''),
-    role: 'dialog', 'aria-label': 'User details', style: position,
+    role: 'dialog', 'aria-label': 'User details', 'aria-busy': Boolean(profile?.loading), style: position,
     onPointerEnter: keepProfile, onPointerLeave: hideProfileSoon,
     onFocus: keepProfile, onBlur: event => {
       if (!event.currentTarget.contains(event.relatedTarget)) hideProfileSoon();
@@ -37,6 +45,9 @@ export function ProfileCard({profile, keepProfile, hideProfileSoon}) {
     user.location && h('div', {className: 'profile-location'}, '📍 ' + user.location),
     user.bio && h('div', {className: 'profile-bio'}, user.bio),
     user.company && h('div', {className: 'profile-company'}, '🏢 ' + user.company),
+    h(ProfileStats, {user}),
+    h('div', {className: 'profile-detail-status', role: 'status'},
+      profile.loading ? 'Loading profile details…' : profile.error),
     h('div', {className: 'profile-links'},
       h(ProfileLink, {label: '↗ /dev/null profile', url: user.html_url || `https://dev-null.sh/@${encodeURIComponent(user.handle)}`}),
       user.github_url && h(ProfileLink, {label: '↗ GitHub', url: user.github_url}),

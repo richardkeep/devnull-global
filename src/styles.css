@@ -51,6 +51,12 @@
     .profile-location { color: #c5d5ea; margin: 8px 0; }
     .profile-bio { line-height: 1.5; margin: 10px 0; white-space: normal; overflow-wrap: anywhere; }
     .profile-company { color: #a9bed7; margin-bottom: 12px; }
+    .profile-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin: 14px 0; }
+    .profile-stats > div { display: flex; flex-direction: column-reverse; gap: 4px; padding: 10px 4px; text-align: center; background: #15263d; border-radius: 9px; }
+    .profile-stats dt { color: #a9bed7; font-size: 11px; }
+    .profile-stats dd { margin: 0; font-size: 17px; font-weight: 700; }
+    .profile-detail-status { color: #a9bed7; font-size: 12px; margin-bottom: 10px; }
+    .profile-detail-status:empty { display: none; }
     .profile-links { display: flex; flex-wrap: wrap; gap: 8px; }
     .profile-links a { color: #fff; text-decoration: none; border: 1px solid #508fc7; background: #17446e; padding: 8px 10px; border-radius: 9px; font-weight: 600; }
     .profile-links a:hover { background: #23659d; }
