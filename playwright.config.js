@@ -12,7 +12,7 @@ export default defineConfig({
     { name: 'mobile-chromium', use: { ...devices['Pixel 7'], defaultBrowserType: 'chromium', launchOptions: { args: ['--enable-webgl', '--use-gl=angle', '--use-angle=swiftshader'] } } }
   ],
   webServer: {
-    command: 'python3 -m http.server 4173 --bind 127.0.0.1',
+    command: 'yarn dev --host 127.0.0.1 --port 4173 --strictPort',
     url: 'http://127.0.0.1:4173',
     reuseExistingServer: !process.env.CI,
     timeout: 30000
