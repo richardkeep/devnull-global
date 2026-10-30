@@ -42,6 +42,11 @@
     .person { pointer-events: auto !important; }
     #globe .scene-container > div { pointer-events: none; }
     #globe .scene-container .person { pointer-events: auto !important; }
+    .marker-cluster { width: 0; height: 0; pointer-events: none !important; }
+    .marker-cluster .person { position: absolute; left: 0; top: 0; transform: translate(-50%, -50%) translate(var(--marker-x), var(--marker-y)); }
+    .marker-cluster .person:hover, .marker-cluster .person:focus, .marker-cluster .profile-selected { z-index: 10; }
+    .marker-cluster .person[hidden], .marker-cluster .cluster-count[hidden] { display: none; }
+    .marker-cluster .cluster-count { position: absolute; left: 12px; top: 12px; z-index: 20; margin: 0; min-width: 28px; padding: 4px 7px; border: 1px solid #a5deff; border-radius: 14px; background: #17568c; box-shadow: 0 2px 6px #0008; font-size: 12px; font-weight: 700; white-space: nowrap; pointer-events: auto !important; }
     .profile-card { position: fixed; z-index: 2147483647; isolation: isolate; width: min(340px, calc(100vw - 24px)); padding: 17px; border: 1px solid #65b7ff; border-radius: 18px; background: #0b1829f5; box-shadow: 0 14px 45px #000a, 0 0 24px #299cff44; color: #f4f7fb; display: none; pointer-events: auto; }
     .profile-card.visible { display: block; }
     .profile-head { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
