@@ -37,7 +37,7 @@ export function ControlPanel({handle, mode, status, error, loading, nextUrl, aut
         h('button',{id:'more',type:'button',disabled:loading||!nextUrl,onClick:loadNextPage},nextUrl?'Load 30 more':'All pages loaded'),
         h('button',{id:'auto',type:'button','aria-pressed':String(!autoPaused),disabled:!nextUrl,onClick:toggleAutoLoad},autoPaused?'▶ Resume auto-load':'⏸ Pause auto-load')),
       h('div',{id:'countdown',className:'hint','aria-live':'polite'},countdown),
-      h('div',{className:'hint'},'Drag to rotate · Scroll to zoom'),
+      h('div',{className:'hint'},'Drag to rotate · Scroll to zoom · Select a count to spread avatars'),
       h('div',{className:'credit'},'Vibe-coded by ',
         h('a',{href:'https://dev-null.sh/@richardkeep',target:'_blank',rel:'noopener noreferrer'},'@richardkeep'))));
 }
