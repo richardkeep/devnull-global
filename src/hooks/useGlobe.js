@@ -1,6 +1,6 @@
-import {useEffect, useRef} from 'react';
-import {createProfileMarker} from '../services/profile-markers.js';
-
+import { useEffect, useRef } from 'react';
+import { createProfileMarker } from '../services/profile-markers.js';
+// test
 export function useGlobe(containerRef, {users, activeHandle, showProfile, hideProfileSoon}) {
   const globeRef = useRef(null);
   const activeHandleRef = useRef(activeHandle);
