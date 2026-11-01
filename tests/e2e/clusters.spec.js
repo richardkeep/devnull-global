@@ -1,4 +1,5 @@
 import {test, expect} from '@playwright/test';
+import {signIn} from './auth.js';
 
 const members = Array.from({length: 12}, (_, index) => ({
   handle: `developer-${String(index).padStart(2, '0')}`, name: `Developer ${index}`,
@@ -16,6 +17,7 @@ test.beforeEach(async ({page}) => {
     const handle = path.split('/').pop();
     return route.fulfill({json: {data: {...members.find(user => user.handle === handle), commits_count: 1, followers_count: 2, following_count: 3}}});
   });
+  await signIn(page);
 });
 
 async function openCluster(page) {

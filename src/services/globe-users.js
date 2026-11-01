@@ -1,3 +1,5 @@
+import {AuthError, signedFetch} from './auth.js';
+
 export function normalizeUser(u) {
   const location = typeof u.location === 'string' ? u.location : (u.location?.name || u.city || u.country || '');
   const lat = Number(u.latitude ?? u.lat ?? u.location?.latitude);
@@ -26,10 +28,14 @@ export async function fetchUserPage(url, signal) {
   if (pageUrl.origin !== location.origin && pageUrl.origin !== 'https://dev-null.sh') {
     throw new Error('Unexpected pagination URL');
   }
-  const response = await fetch(`${location.origin}${pageUrl.pathname}${pageUrl.search}`, {
-    signal, headers: {Accept: 'application/json'}
-  });
+  // Follow lists are for signed-in members only, so every page is a signed request.
+  const response = await signedFetch(pageUrl.pathname + pageUrl.search, {signal});
   if (!response.ok) {
+    if (response.status === 401) {
+      let body = {};
+      try { body = await response.json(); } catch {}
+      throw new AuthError(body.message || 'dev/null rejected the request signature.', body.code || 'invalid_signature');
+    }
     if (response.status === 429) {
       const retryAfter = response.headers.get('Retry-After');
       throw new Error(`Rate limited (429). Wait ${retryAfter ? retryAfter + ' seconds' : 'a while'} before clicking again.`);

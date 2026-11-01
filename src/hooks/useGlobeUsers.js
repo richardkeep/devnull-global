@@ -1,7 +1,9 @@
 import {useCallback, useEffect, useRef, useState} from 'react';
+import {AuthError} from '../services/auth.js';
 import {fetchUserPage, geocode, normalizeUser, restoreSession, saveSession, userUrl} from '../services/globe-users.js';
 
 const AUTO_DELAY_MS = 3000;
+const SIGNED_OUT_STATUS = 'Sign in to see who follows whom.';
 const summary = session => `${session.plotted.length} on globe · ${session.skipped} not plotted · ${session.loaded} fetched`;
 
 function createSession(handle, mode) {
@@ -27,8 +29,12 @@ function delay(ms, signal) {
   });
 }
 
-export function useGlobeUsers() {
+// signedIn is null while the stored sign-in is still being read.
+export function useGlobeUsers(signedIn, onDeviceRevoked) {
   const sessionRef = useRef(null);
+  const signedInRef = useRef(signedIn);
+  const onDeviceRevokedRef = useRef(onDeviceRevoked);
+  onDeviceRevokedRef.current = onDeviceRevoked;
   const [state, setState] = useState({
     handle: 'tom', mode: 'following', plotted: [], loading: true, nextUrl: null,
     autoPaused: false, status: 'Loading users…', error: ''
@@ -45,7 +51,7 @@ export function useGlobeUsers() {
 
   const loadNextPage = useCallback(async () => {
     const session = sessionRef.current;
-    if (!session || session.loading || !session.nextUrl) return;
+    if (!session || session.loading || !session.nextUrl || !signedInRef.current) return;
     const {signal} = session.controller;
     session.loading = true;
     session.error = '';
@@ -90,6 +96,7 @@ export function useGlobeUsers() {
       if (signal.aborted) return;
       console.error(error);
       session.error = error.message;
+      if (error instanceof AuthError && error.code === 'device_not_approved') onDeviceRevokedRef.current?.(error.message);
       // Failed pages must be retried explicitly, especially HTTP 429.
       session.autoPaused = true;
       session.status = `${session.plotted.length} users on globe. Could not load next page.`;
@@ -121,10 +128,22 @@ export function useGlobeUsers() {
       session.status = `${summary(session)} (restored)`;
       publish(session);
     } else {
+      if (signedInRef.current === false) session.status = SIGNED_OUT_STATUS;
       publish(session);
       loadNextPage();
     }
   }, [loadNextPage, publish]);
+
+  useEffect(() => {
+    signedInRef.current = signedIn;
+    const session = sessionRef.current;
+    if (!session || session.loaded || session.loading) return;
+    if (signedIn) loadNextPage();
+    else if (signedIn === false) {
+      session.status = SIGNED_OUT_STATUS;
+      publish(session);
+    }
+  }, [signedIn, loadNextPage, publish]);
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
@@ -137,14 +156,14 @@ export function useGlobeUsers() {
 
   useEffect(() => {
     setCountdown(state.autoPaused && state.nextUrl ? 'Automatic loading paused' : '');
-    if (state.autoPaused || state.loading || !state.nextUrl) return;
+    if (!signedIn || state.autoPaused || state.loading || !state.nextUrl) return;
     const nextAutoAt = Date.now() + AUTO_DELAY_MS;
     const tick = () => setCountdown(`Loading 30 more devs in ${Math.max(0, Math.ceil((nextAutoAt - Date.now()) / 1000))}s`);
     tick();
     const interval = setInterval(tick, 1000);
     const timer = setTimeout(loadNextPage, AUTO_DELAY_MS);
     return () => { clearInterval(interval); clearTimeout(timer); };
-  }, [state.handle, state.mode, state.autoPaused, state.loading, state.nextUrl, loadNextPage]);
+  }, [signedIn, state.handle, state.mode, state.autoPaused, state.loading, state.nextUrl, loadNextPage]);
 
   const toggleAutoLoad = useCallback(() => {
     const session = sessionRef.current;
@@ -154,5 +173,5 @@ export function useGlobeUsers() {
     publish(session);
   }, [publish]);
 
-  return {...state, countdown, switchUser, loadNextPage, toggleAutoLoad};
+  return {...state, signedIn: Boolean(signedIn), countdown, switchUser, loadNextPage, toggleAutoLoad};
 }

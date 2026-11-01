@@ -45,6 +45,19 @@
     .restored-note { grid-column: 1 / -1; font-size: 13px; color: #b5c5da; margin-top: 6px; }
     #error { color: #ffbdb9; font-size: 14px; line-height: 1.6; overflow-wrap: anywhere; }
     #error:not(:empty) { margin: 12px 0; padding: 10px; background: #ffaaa50a; border-radius: 8px; }
+    .account { margin-top: 16px; padding: 14px; background: #0913217a; border: 1px solid #ffffff12; border-radius: 14px; }
+    .account-note { color: #d8e3f1; font-size: 14px; line-height: 1.55; margin: 0 0 12px; }
+    .account-note:last-child { margin: 0; }
+    .panel .account-sign-in { width: 100%; padding: 11px 14px; background: #d0f3e9; color: #112c28; border: 1px solid #e1fff5; box-shadow: 0 2px 8px #0003; }
+    .panel .account-sign-in:hover { background: #e6fff6; }
+    .account-steps { margin: 0 0 12px; padding-left: 20px; color: #d8e3f1; font-size: 13px; line-height: 1.6; }
+    .account-paste.lookup { margin-bottom: 10px; }
+    .account-paste input { font-size: 14px; }
+    .panel .account-link { padding: 0; background: none; border: 0; color: #dcf4ee; font-size: 13px; font-weight: 550; cursor: pointer; }
+    .panel .account-link:hover { color: #c2f4e7; text-decoration: underline; }
+    .account-error { margin-top: 10px; color: #ffbdb9; font-size: 13px; line-height: 1.5; overflow-wrap: anywhere; }
+    .account-signed-in { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 10px 14px; color: #bfcee1; font-size: 13px; }
+    .panel.collapsed .account-signed-in { display: none; }
     .panel.collapsed .panel-content { display: none; }
     .panel.collapsed { padding: 18px 20px; }
     .panel.collapsed .panel-eyebrow { margin-bottom: 12px; }

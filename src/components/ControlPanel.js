@@ -1,8 +1,9 @@
 import React, {useState, useEffect, useRef} from 'react';
+import {AccountBar} from './AccountBar.js';
 const h = React.createElement;
 const KEY = 'dev-null-globe-panel-collapsed';
-export function ControlPanel({handle, mode, status, error, loading, nextUrl, autoPaused,
-  countdown, switchUser, loadNextPage, toggleAutoLoad}) {
+export function ControlPanel({handle, mode, status, error, loading, nextUrl, autoPaused, signedIn,
+  countdown, switchUser, loadNextPage, toggleAutoLoad, auth}) {
   const contentRef = useRef(null);
   const [input, setInput] = useState(handle);
   const metrics = status.match(/^(\d+) on globe · (\d+) not plotted · (\d+) fetched(.*)$/);
@@ -25,6 +26,7 @@ export function ControlPanel({handle, mode, status, error, loading, nextUrl, aut
       h('button',{id:'collapse-toggle',className:'collapse-toggle',type:'button',
         'aria-expanded':String(!collapsed),'aria-controls':'panel-content',
         onClick:()=>setCollapsed(value=>!value)},collapsed?'Show ▼':'Hide ▲')),
+    h(AccountBar,{auth,switchUser}),
     h('div',{id:'panel-content',className:'panel-content',ref:contentRef},
       h('p',{className:'panel-intro'},'Your network. Around the world.'),
       h('label',{className:'field-label',htmlFor:'handle'},'Explore a developer'),
@@ -45,8 +47,8 @@ export function ControlPanel({handle, mode, status, error, loading, nextUrl, aut
           metrics[4] && h('span',{className:'restored-note',key:'restored'},metrics[4])] : status),
       h('div',{id:'error'},error),
       h('div',{className:'actions'},
-        h('button',{id:'more',type:'button',disabled:loading||!nextUrl,onClick:loadNextPage},nextUrl?'Load 30 more':'All pages loaded'),
-        h('button',{id:'auto',type:'button','aria-pressed':String(!autoPaused),disabled:!nextUrl,onClick:toggleAutoLoad},autoPaused?'▶ Resume auto-load':'⏸ Pause auto-load')),
+        h('button',{id:'more',type:'button',disabled:loading||!nextUrl||!signedIn,onClick:loadNextPage},nextUrl?'Load 30 more':'All pages loaded'),
+        h('button',{id:'auto',type:'button','aria-pressed':String(!autoPaused),disabled:!nextUrl||!signedIn,onClick:toggleAutoLoad},autoPaused?'▶ Resume auto-load':'⏸ Pause auto-load')),
       h('div',{id:'countdown',className:'hint','aria-live':'polite'},countdown),
       h('div',{className:'hint globe-instructions'},h('span',{'aria-hidden':true},'↔'),' Drag to rotate',h('span',{className:'hint-divider'},'·'),'Scroll to zoom'),
       h('div',{className:'hint cluster-instructions'},'Select a count to spread avatars'),

@@ -1,4 +1,5 @@
 import {test, expect} from '@playwright/test';
+import {signIn} from './auth.js';
 
 const profileUser = handle => ({handle, name: handle, location: 'Nairobi', latitude: 0, longitude: 15,
   avatar_url: 'https://example.test/avatar.png'});
@@ -11,6 +12,7 @@ test.beforeEach(async ({page}) => {
     body: Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+j5ZkAAAAASUVORK5CYII=', 'base64')
   }));
   await page.route('**/api/v1/users/*/following', route => route.fulfill({json: {data: [profileUser('tom')]}}));
+  await signIn(page);
 });
 
 test('loads profile details on hover and reuses them on later hovers', async ({page}) => {

@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import {signIn} from './auth.js';
 
 const user = (handle, lat, lng) => ({
   handle, name: handle, location: 'Nairobi, Kenya', latitude: lat, longitude: lng,
@@ -22,6 +23,7 @@ test.beforeEach(async ({ page }) => {
       body: JSON.stringify({ data, links: { next: second ? null : url.pathname + '?page=2' } })
     });
   });
+  await signIn(page);
 });
 
 test('loads users, skips missing locations and paginates on demand', async ({ page }) => {
